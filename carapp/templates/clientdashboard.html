@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Client Dashboard{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-5">Welcome, {{ request.user.username }}</h1>
+            <p class="lead">Your account has been approved. Use the links below to navigate.</p>
+
+            <div class="list-group">
+                <a href="{% url 'home' %}" class="list-group-item list-group-item-action">Home</a>
+                <a href="{% url 'blog' %}" class="list-group-item list-group-item-action">Browse Cars</a>
+                <a href="{% url 'contacts' %}" class="list-group-item list-group-item-action">Contact</a>
+                <a href="{% url 'about' %}" class="list-group-item list-group-item-action">About</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Account Info</h5>
+                    <p class="card-text"><strong>Username:</strong> {{ request.user.username }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p class="card-text"><strong>Status:</strong> Approved</p>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
