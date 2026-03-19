@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Client Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Client Dashboard</h1>
+    <h2>Your Inquiries</h2>
+    <ul>
+        {% for inquiry in inquiries %}
+        <li>{{ inquiry.car.model }} - {{ inquiry.inquiry_type }} - {% if inquiry.approved %}Approved{% else %}Pending{% endif %}
+            {% if inquiry.approved %}
+                <a href="{% url 'make_payment' inquiry.id %}">Make Payment</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <h2>Messages</h2>
+    <ul>
+        {% for message in messages %}
+        <li>{{ message.content }} - {{ message.date }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

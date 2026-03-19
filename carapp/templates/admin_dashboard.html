@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Admin Dashboard</h1>
+    <h2>Profiles</h2>
+    <ul>
+        {% for profile in profiles %}
+        <li>{{ profile.user.username }} - {{ profile.role }} - {% if profile.approved %}Approved{% else %}Pending{% endif %}
+            <a href="{% url 'revoke_user' profile.user.id %}">Revoke</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <h2>Cars</h2>
+    <ul>
+        {% for car in cars %}
+        <li>{{ car.model }} - {{ car.owner.username }} - {% if car.approved %}Approved{% else %}Pending{% endif %}</li>
+        {% endfor %}
+    </ul>
+    <h2>Inquiries</h2>
+    <ul>
+        {% for inquiry in inquiries %}
+        <li>{{ inquiry.client_name }} - {{ inquiry.car.model }} - {{ inquiry.inquiry_type }} - {% if inquiry.approved %}Approved{% else %}Pending{% endif %}
+            {% if not inquiry.approved %}
+                <a href="{% url 'approve_inquiry' inquiry.id %}">Approve</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

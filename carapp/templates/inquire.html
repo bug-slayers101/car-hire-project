@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Inquire Car{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Inquire for {{ car.model }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if booking_form %}
+        <h3>Booking Details</h3>
+        {{ booking_form.as_p }}
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Submit Inquiry</button>
+    </form>
+</div>
+{% endblock %}

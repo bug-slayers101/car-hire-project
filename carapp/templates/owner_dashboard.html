@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Owner Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Owner Dashboard</h1>
+    <a href="{% url 'register_car' %}" class="btn btn-primary">Register New Car</a>
+    <h2>Your Cars</h2>
+    <ul>
+        {% for car in cars %}
+        <li>{{ car.model }} - {{ car.car_type }} - {% if car.approved %}Approved{% else %}Pending{% endif %}
+            {% if not car.available %}Sold{% endif %}
+            <a href="{% url 'cancel_car' car.id %}">Cancel</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <h2>Messages</h2>
+    <ul>
+        {% for message in messages %}
+        <li>{{ message.content }} - {{ message.date }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

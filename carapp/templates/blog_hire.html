@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Cars for Hire{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Cars for Hire</h1>
+    <div class="row">
+        {% for car in cars %}
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.model }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ car.model }}</h5>
+                    <p class="card-text">Price per day: ${{ car.price }}</p>
+                    <p class="card-text">Seats: {{ car.seats }}</p>
+                    <p class="card-text">Engine: {{ car.engine_type }}</p>
+                    <p class="card-text">Fuel: {{ car.fuel_type }}</p>
+                    {% if user.is_authenticated and user.profile.role == 'client' %}
+                        <a href="{% url 'inquire_car' car.id 'hire' %}" class="btn btn-primary">Hire</a>
+                    {% else %}
+                        <p>Please login as client to hire.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

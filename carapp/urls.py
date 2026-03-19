@@ -2,20 +2,24 @@ from . import views
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.index, name='home'),
     path('about/', views.about, name='about'),
     path('contacts/', views.contact, name='contacts'),
-    path('blog/', views.blog, name='blog'),
-    path('register/', views.register, name='register'),
+    path('blog/sale/', views.blog_sale, name='blog_sale'),
+    path('blog/hire/', views.blog_hire, name='blog_hire'),
+    path('register/<str:role>/', views.register_profile, name='register_profile'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('carsdata/', views.carsdata, name='carsdata'),
-    path('car/<int:id>/', views.car_detail, name='car_detail'),
-    path('makepayment/<int:id>/', views.make_payment, name='makepayment'),
-    path('clientdetail/', views.clientdetail, name='clientdetail'),
-    path('clientdashboard/', views.client_dashboard, name='clientdashboard'),
-    path('car/<int:id>/edit/', views.car_edit, name='car_edit'),
-    path('car/<int:id>/delete/', views.car_delete, name='car_delete'),
+    path('client/dashboard/', views.client_dashboard, name='client_dashboard'),
+    path('car/<int:car_id>/inquire/<str:inquiry_type>/', views.inquire_car, name='inquire_car'),
+    path('inquiry/<int:inquiry_id>/payment/', views.make_payment, name='make_payment'),
+    path('owner/dashboard/', views.owner_dashboard, name='owner_dashboard'),
+    path('owner/register_car/', views.register_car, name='register_car'),
+    path('owner/cancel_car/<int:car_id>/', views.cancel_car, name='cancel_car'),
+    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/approve_inquiry/<int:inquiry_id>/', views.approve_inquiry, name='approve_inquiry'),
+    path('admin/revoke_user/<int:user_id>/', views.revoke_user, name='revoke_user'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

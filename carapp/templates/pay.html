@@ -7,19 +7,19 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h1 class="display-4">Make Payment</h1>
-            <p>Complete your payment details below.</p>
+            <p>Complete your payment for {{ inquiry.car.model }}.</p>
 
             <form method="POST">
                 {% csrf_token %}
 
                 <div class="mb-3">
                     <label class="form-label">Car</label>
-                    <input type="text" class="form-control" value="{{ car.car_model }}" readonly>
+                    <input type="text" class="form-control" value="{{ inquiry.car.model }}" readonly>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Price</label>
-                    <input type="text" class="form-control" value="{{ car.price }}" readonly>
+                    <input type="text" class="form-control" value="${{ inquiry.total_price }}" readonly>
                 </div>
 
                 <div class="mb-3">
@@ -43,7 +43,8 @@
                     </div>
                 </div>
 
-                <button class="btn btn-success w-100" type="submit">Pay ksh {{ car.price }}</button>
+                <button class="btn btn-success w-100" type="submit" name="action" value="accept">Pay ${{ inquiry.total_price }}</button>
+                <button class="btn btn-danger w-100 mt-2" type="submit" name="action" value="reject">Reject</button>
             </form>
         </div>
     </div>
