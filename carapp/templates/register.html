@@ -1,33 +1,82 @@
 {% extends 'base.html' %}
 {% block title %}Register{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow p-4">
                 <h1 class="text-center mb-4">Register as {{ role|title }}</h1>
                 <form method="post">
                     {% csrf_token %}
+                    
+                    <!-- Username Field -->
                     <div class="mb-3">
-                        {{ user_form.username.label_tag }}
+                        <label for="{{ user_form.username.id_for_label }}" class="form-label">Username:</label>
                         {{ user_form.username }}
+                        {% if user_form.username.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ user_form.username.errors }}</div>
+                        {% endif %}
                     </div>
+                    
+                    <!-- Password Field -->
                     <div class="mb-3">
-                        {{ user_form.password1.label_tag }}
+                        <label for="{{ user_form.password1.id_for_label }}" class="form-label">Password:</label>
                         {{ user_form.password1 }}
+                        {% if user_form.password1.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ user_form.password1.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted d-block mt-2">
+                            Your password can't be too similar to your other personal information.<br>
+                            Your password must contain at least 8 characters.<br>
+                            Your password can't be a commonly used password.<br>
+                            Your password can't be entirely numeric.
+                        </small>
                     </div>
+                    
+                    <!-- Confirm Password Field -->
                     <div class="mb-3">
-                        {{ user_form.password2.label_tag }}
+                        <label for="{{ user_form.password2.id_for_label }}" class="form-label">Confirm Password:</label>
                         {{ user_form.password2 }}
+                        {% if user_form.password2.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ user_form.password2.errors }}</div>
+                        {% endif %}
                     </div>
+                    
+                    <!-- Role Field -->
                     <div class="mb-3">
-                        {{ profile_form.phone_number.label_tag }}
+                        <label for="{{ profile_form.role.id_for_label }}" class="form-label">Role:</label>
+                        {{ profile_form.role }}
+                        {% if profile_form.role.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ profile_form.role.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Phone Number Field -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.phone_number.id_for_label }}" class="form-label">Phone Number:</label>
                         {{ profile_form.phone_number }}
+                        {% if profile_form.phone_number.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ profile_form.phone_number.errors }}</div>
+                        {% endif %}
                     </div>
+                    
+                    <!-- ID Number Field -->
                     <div class="mb-3">
-                        {{ profile_form.id_number.label_tag }}
+                        <label for="{{ profile_form.id_number.id_for_label }}" class="form-label">ID Number (10 digits):</label>
                         {{ profile_form.id_number }}
+                        {% if profile_form.id_number.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ profile_form.id_number.errors }}</div>
+                        {% endif %}
                     </div>
+                    
+                    <!-- Non-field Errors -->
+                    {% if user_form.non_field_errors %}
+                        <div class="alert alert-danger">{{ user_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% if profile_form.non_field_errors %}
+                        <div class="alert alert-danger">{{ profile_form.non_field_errors }}</div>
+                    {% endif %}
+                    
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>
             </div>

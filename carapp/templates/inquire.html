@@ -1,45 +1,70 @@
 {% extends 'base.html' %}
 {% block title %}Inquire Car{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow p-4">
-                <h1 class="text-center mb-4">Inquire for {{ car.model }}</h1>
+            <div class="card shadow p-4 bg-dark border-secondary">
+                <h1 class="text-center mb-4 text-light">Inquire for {{ car.model }}</h1>
                 <form method="post">
                     {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+                    
+                    <h5 class="text-light mb-3">Your Information</h5>
+                    
                     <div class="mb-3">
-                        {{ form.client_name.label_tag }}
+                        <label for="{{ form.client_name.id_for_label }}" class="form-label text-light">Full Name:</label>
                         {{ form.client_name }}
+                        {% if form.client_name.errors %}<div class="alert alert-danger mt-2 small">{{ form.client_name.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.client_phone.label_tag }}
+                        <label for="{{ form.client_phone.id_for_label }}" class="form-label text-light">Phone Number:</label>
                         {{ form.client_phone }}
+                        {% if form.client_phone.errors %}<div class="alert alert-danger mt-2 small">{{ form.client_phone.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.client_email.label_tag }}
+                        <label for="{{ form.client_email.id_for_label }}" class="form-label text-light">Email Address:</label>
                         {{ form.client_email }}
+                        {% if form.client_email.errors %}<div class="alert alert-danger mt-2 small">{{ form.client_email.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.client_id_number.label_tag }}
+                        <label for="{{ form.client_id_number.id_for_label }}" class="form-label text-light">ID Number (10 digits):</label>
                         {{ form.client_id_number }}
+                        {% if form.client_id_number.errors %}<div class="alert alert-danger mt-2 small">{{ form.client_id_number.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.message.label_tag }}
+                        <label for="{{ form.message.id_for_label }}" class="form-label text-light">Additional Message:</label>
                         {{ form.message }}
+                        {% if form.message.errors %}<div class="alert alert-danger mt-2 small">{{ form.message.errors }}</div>{% endif %}
                     </div>
+                    
                     {% if booking_form %}
-                    <h3 class="mt-4">Booking Details</h3>
+                    <hr class="border-secondary">
+                    <h5 class="text-light mb-3">Booking Details</h5>
                     <div class="mb-3">
-                        {{ booking_form.start_date.label_tag }}
+                        <label for="{{ booking_form.start_date.id_for_label }}" class="form-label text-light">Start Date:</label>
                         {{ booking_form.start_date }}
+                        {% if booking_form.start_date.errors %}<div class="alert alert-danger mt-2 small">{{ booking_form.start_date.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ booking_form.end_date.label_tag }}
+                        <label for="{{ booking_form.end_date.id_for_label }}" class="form-label text-light">End Date:</label>
                         {{ booking_form.end_date }}
+                        {% if booking_form.end_date.errors %}<div class="alert alert-danger mt-2 small">{{ booking_form.end_date.errors }}</div>{% endif %}
                     </div>
                     {% endif %}
-                    <button type="submit" class="btn btn-primary w-100">Submit Inquiry</button>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success w-100">Submit Inquiry</button>
+                        <a href="{% if inquiry_type == 'hire' %}{% url 'blog_hire' %}{% else %}{% url 'blog_sale' %}{% endif %}" class="btn btn-secondary w-100">Cancel</a>
+                    </div>
                 </form>
             </div>
         </div>

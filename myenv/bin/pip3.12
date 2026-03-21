@@ -1,4 +1,6 @@
-#!/home/emobilis/PycharmProjects/car-hire-project/myenv/bin/python3
+#!/bin/sh
+'''exec' "/home/emobilis/Desktop/Denzel Gift/car-hire-project/myenv/bin/python3" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

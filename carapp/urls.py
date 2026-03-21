@@ -21,8 +21,8 @@ urlpatterns = [
     path('owner/dashboard/', views.owner_dashboard, name='owner_dashboard'),
     path('owner/register_car/', views.register_car, name='register_car'),
     path('owner/cancel_car/<int:car_id>/', views.cancel_car, name='cancel_car'),
-    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin/approve_inquiry/<int:inquiry_id>/', views.approve_inquiry, name='approve_inquiry'),
-    path('admin/revoke_user/<int:user_id>/', views.revoke_user, name='revoke_user'),
+    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('approve_inquiry/<int:inquiry_id>/', views.approve_inquiry, name='approve_inquiry'),
+    path('revoke_user/<int:user_id>/', views.revoke_user, name='revoke_user'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

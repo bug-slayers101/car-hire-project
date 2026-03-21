@@ -5,11 +5,11 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row">
         <div class="col-12 text-center mb-4">
-            <h1 class="display-5">Cars for Hire</h1>
-            <p class="text-muted">Select a car and proceed to booking.</p>
+            <h1 class="display-5 text-light">Cars for Hire</h1>
+            <p class="text-muted">Browse our selection and book your car today.</p>
         </div>
     </div>
 
@@ -17,24 +17,24 @@
         {% if cars %}
         {% for car in cars %}
         <div class="col-md-4 mb-4">
-            <div class="card h-100">
+            <div class="card h-100" style="background-color: #b2beb5; border-color: #b2beb5;">
                 {% if car.image %}
                 <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.model }}">
                 {% else %}
                 <img src="{% static 'images/img-4.png' %}" class="card-img-top" alt="{{ car.model }}">
                 {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ car.model }}</h5>
-                    <p class="card-text">Price per day: ksh {{ car.price }}</p>
-                    <p class="card-text">Seats: {{ car.seats }}</p>
-                    <p class="card-text">Engine: {{ car.engine_type }}</p>
-                    <p class="card-text">Fuel: {{ car.fuel_type }}</p>
+                    <h5 class="card-title" style="color: black;">{{ car.model }}</h5>
+                    <p class="card-text" style="color: black;"><strong>Price per day:</strong> KSH {{ car.price }}</p>
+                    <p class="card-text" style="color: black;"><strong>Seats:</strong> {{ car.seats }}</p>
+                    <p class="card-text" style="color: black;"><strong>Engine:</strong> {{ car.engine_type }}</p>
+                    <p class="card-text" style="color: black;"><strong>Fuel:</strong> {{ car.fuel_type }}</p>
                 </div>
-                <div class="card-footer bg-white border-0">
+                <div class="card-footer" style="background-color: #b2beb5; border-color: #b2beb5;">
                     {% if user.is_authenticated and user.profile.role == 'client' %}
-                        <a href="{% url 'book_car' car.id %}" class="btn btn-primary w-100">Book Now</a>
+                        <a href="{% url 'book_car' car.id %}" class="btn btn-info w-100">Make Inquiry</a>
                     {% else %}
-                        <p>Please login as client to book.</p>
+                        <p class="text-warning mb-0"><small>Please login as client to inquire.</small></p>
                     {% endif %}
                 </div>
             </div>
@@ -42,7 +42,7 @@
         {% endfor %}
         {% else %}
         <div class="col-12">
-            <div class="alert alert-info">No cars available for hire right now.</div>
+            <div class="alert alert-info text-light">No cars available for hire right now.</div>
         </div>
         {% endif %}
     </div>

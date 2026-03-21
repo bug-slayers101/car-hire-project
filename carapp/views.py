@@ -2,9 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from .models import Profile, Car, ClientInquiry, Message, Booking
-from .forms import ProfileForm, CarForm, ClientInquiryForm, BookingForm
+from .forms import ProfileForm, CarForm, ClientInquiryForm, BookingForm, LoginForm, UserRegistrationForm
 from django.contrib import messages
 from django.utils import timezone
 from datetime import date
@@ -42,8 +41,13 @@ def car_detail(request, car_id):
 
 # Registration and Login
 def register_profile(request, role):
+    # Validate role from URL
+    if role not in ['owner', 'client']:
+        messages.error(request, 'Invalid registration role.')
+        return redirect('home')
+    
     if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
+        user_form = UserRegistrationForm(request.POST)
         profile_form = ProfileForm(request.POST)
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save(commit=False)
@@ -51,34 +55,39 @@ def register_profile(request, role):
             user.save()
             profile = profile_form.save(commit=False)
             profile.user = user
+            profile.role = role  # Force role from URL parameter
             profile.save()
             messages.success(request, 'Registration submitted. Await admin approval.')
             return redirect('login')
     else:
-        user_form = UserCreationForm()
+        user_form = UserRegistrationForm()
         profile_form = ProfileForm(initial={'role': role})
     return render(request, 'register.html', {'user_form': user_form, 'profile_form': profile_form, 'role': role})
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_active:
-            try:
-                profile = Profile.objects.get(user=user)
-                login(request, user)
-                if user.is_staff:
-                    return redirect('admin_dashboard')
-                elif profile.role == 'owner':
-                    return redirect('owner_dashboard')
-                else:
-                    return redirect('client_dashboard')
-            except Profile.DoesNotExist:
-                messages.error(request, 'Profile not found.')
-        else:
-            messages.error(request, 'Invalid credentials or account not active.')
-    return render(request, 'login.html')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_active:
+                try:
+                    profile = Profile.objects.get(user=user)
+                    login(request, user)
+                    if user.is_staff:
+                        return redirect('admin_dashboard')
+                    elif profile.role == 'owner':
+                        return redirect('owner_dashboard')
+                    else:
+                        return redirect('client_dashboard')
+                except Profile.DoesNotExist:
+                    messages.error(request, 'Profile not found.')
+            else:
+                messages.error(request, 'Invalid credentials or account not active.')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 # Client views
 @login_required
@@ -187,10 +196,22 @@ def cancel_car(request, car_id):
 def admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('home')
-    profiles = Profile.objects.all()
+    
+    # Separate profiles by role
+    client_profiles = Profile.objects.filter(role='client')
+    owner_profiles = Profile.objects.filter(role='owner')
+    
+    # Get cars and inquiries
     cars = Car.objects.all()
     inquiries = ClientInquiry.objects.all()
-    return render(request, 'admin_dashboard.html', {'profiles': profiles, 'cars': cars, 'inquiries': inquiries})
+    
+    context = {
+        'client_profiles': client_profiles,
+        'owner_profiles': owner_profiles,
+        'cars': cars,
+        'inquiries': inquiries,
+    }
+    return render(request, 'admin_dashboard.html', context)
 
 @login_required
 def approve_inquiry(request, inquiry_id):

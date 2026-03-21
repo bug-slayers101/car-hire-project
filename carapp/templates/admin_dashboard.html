@@ -1,65 +1,273 @@
 {% extends 'base.html' %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Admin Dashboard</h1>
+<div class="container-fluid mt-5 mb-5">
+    <h1 class="text-center mb-4 text-light">Admin Dashboard</h1>
 
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Profiles</h2>
-            {% if profiles %}
-                <div class="list-group">
-                    {% for profile in profiles %}
-                    <div class="list-group-item">
-                        <h5>{{ profile.user.username }}</h5>
-                        <p>Role: {{ profile.role }}</p>
-                        <p>Status: {% if profile.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
-                        <a href="{% url 'revoke_user' profile.user.id %}" class="btn btn-danger btn-sm">Revoke</a>
-                    </div>
-                    {% endfor %}
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="clients-tab" data-bs-toggle="tab" href="#clients" role="tab">Client Profiles</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="owners-tab" data-bs-toggle="tab" href="#owners" role="tab">Owner Profiles</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="cars-tab" data-bs-toggle="tab" href="#cars" role="tab">Cars for Approval</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="inquiries-tab" data-bs-toggle="tab" href="#inquiries" role="tab">Inquiries for Approval</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Client Profiles Tab -->
+        <div class="tab-pane fade show active" id="clients" role="tabpanel">
+            <h2 class="mb-3 text-light">Client Profiles</h2>
+            {% if client_profiles %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Username</th>
+                                <th>Phone Number</th>
+                                <th>ID Number</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for profile in client_profiles %}
+                            <tr>
+                                <td><strong>{{ profile.user.username }}</strong></td>
+                                <td>{{ profile.phone_number }}</td>
+                                <td>{{ profile.id_number }}</td>
+                                <td>
+                                    {% if profile.approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                    {% if profile.user.is_active %}
+                                        <span class="badge bg-info">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ profile.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'revoke_user' profile.user.id %}" class="btn btn-danger btn-sm">Revoke</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% else %}
-                <p class="text-muted">No profiles.</p>
+                <p class="text-muted text-center">No client profiles found.</p>
             {% endif %}
         </div>
 
-        <div class="col-md-4">
-            <h2>Cars</h2>
+        <!-- Owner Profiles Tab -->
+        <div class="tab-pane fade" id="owners" role="tabpanel">
+            <h2 class="mb-3 text-light">Owner Profiles</h2>
+            {% if owner_profiles %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Username</th>
+                                <th>Phone Number</th>
+                                <th>ID Number</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for profile in owner_profiles %}
+                            <tr>
+                                <td><strong>{{ profile.user.username }}</strong></td>
+                                <td>{{ profile.phone_number }}</td>
+                                <td>{{ profile.id_number }}</td>
+                                <td>
+                                    {% if profile.approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                    {% if profile.user.is_active %}
+                                        <span class="badge bg-info">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ profile.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'revoke_user' profile.user.id %}" class="btn btn-danger btn-sm">Revoke</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center">No owner profiles found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Cars for Approval Tab -->
+        <div class="tab-pane fade" id="cars" role="tabpanel">
+            <h2 class="mb-3 text-light">Cars for Approval</h2>
             {% if cars %}
-                <div class="list-group">
-                    {% for car in cars %}
-                    <div class="list-group-item">
-                        <h5>{{ car.model }}</h5>
-                        <p>Owner: {{ car.owner.username }}</p>
-                        <p>Status: {% if car.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
-                    </div>
-                    {% endfor %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Model</th>
+                                <th>Plate</th>
+                                <th>Owner</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Registered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for car in cars %}
+                            <tr>
+                                <td><strong>{{ car.model }}</strong></td>
+                                <td>{{ car.plate }}</td>
+                                <td>{{ car.owner.username }}</td>
+                                <td>
+                                    {% if car.car_type == 'sale' %}
+                                        <span class="badge bg-primary">For Sale</span>
+                                    {% else %}
+                                        <span class="badge bg-info">For Lease</span>
+                                    {% endif %}
+                                </td>
+                                <td>${{ car.price }}</td>
+                                <td>
+                                    {% if car.approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                    {% if car.available %}
+                                        <span class="badge bg-info">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Unavailable</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ car.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% else %}
-                <p class="text-muted">No cars.</p>
+                <p class="text-muted text-center">No cars found.</p>
             {% endif %}
         </div>
 
-        <div class="col-md-4">
-            <h2>Inquiries</h2>
+        <!-- Inquiries for Approval Tab -->
+        <div class="tab-pane fade" id="inquiries" role="tabpanel">
+            <h2 class="mb-3 text-light">Inquiries for Approval</h2>
             {% if inquiries %}
-                <div class="list-group">
-                    {% for inquiry in inquiries %}
-                    <div class="list-group-item">
-                        <h5>{{ inquiry.client_name }}</h5>
-                        <p>Car: {{ inquiry.car.model }}</p>
-                        <p>Type: {{ inquiry.inquiry_type }}</p>
-                        <p>Status: {% if inquiry.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
-                        {% if not inquiry.approved %}
-                            <a href="{% url 'approve_inquiry' inquiry.id %}" class="btn btn-success btn-sm">Approve</a>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Car</th>
+                                <th>Type</th>
+                                <th>Email</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inquiry in inquiries %}
+                            <tr>
+                                <td><strong>{{ inquiry.client_name }}</strong></td>
+                                <td>{{ inquiry.car.model }}</td>
+                                <td>
+                                    {% if inquiry.inquiry_type == 'buy' %}
+                                        <span class="badge bg-primary">Buy</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Hire</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ inquiry.client_email }}</td>
+                                <td>
+                                    {% if inquiry.total_price %}
+                                        ${{ inquiry.total_price }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if inquiry.approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ inquiry.created_at|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    {% if not inquiry.approved %}
+                                        <a href="{% url 'approve_inquiry' inquiry.id %}" class="btn btn-success btn-sm">Approve</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% else %}
-                <p class="text-muted">No inquiries.</p>
+                <p class="text-muted text-center">No inquiries found.</p>
             {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+    .nav-tabs {
+        border-bottom-color: #333;
+    }
+    
+    .nav-link {
+        color: #a0a0a0;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+    }
+    
+    .nav-link:hover {
+        color: #e0e0e0;
+        border-bottom-color: #666;
+    }
+    
+    .nav-link.active {
+        color: #0d6efd;
+        border-bottom-color: #0d6efd;
+    }
+    
+    .table-responsive {
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .table-dark thead {
+        background-color: #0d0d0d;
+    }
+
+    .table-dark tbody td {
+        color: #e0e0e0;
+    }
+</style>
 {% endblock %}

@@ -5,10 +5,54 @@ from django import forms
 from django.core.exceptions import ValidationError
 from datetime import date
 
+class UserRegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Username',
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password1'].widget = forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+        })
+        self.fields['password2'].widget = forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm Password',
+        })
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Username',
+            'required': True
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'required': True
+        })
+    )
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['role', 'phone_number', 'id_number']
+        widgets = {
+            'role': forms.Select(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID Number (10 digits)'}),
+        }
 
 class CarForm(forms.ModelForm):
     class Meta:

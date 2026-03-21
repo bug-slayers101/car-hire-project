@@ -1,53 +1,82 @@
 {% extends 'base.html' %}
 {% block title %}Register Car{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow p-4">
-                <h1 class="text-center mb-4">Register Your Car</h1>
+            <div class="card shadow p-4 bg-dark border-secondary">
+                <h1 class="text-center mb-4 text-light">Register Your Car</h1>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+                    
                     <div class="mb-3">
-                        {{ form.model.label_tag }}
+                        <label for="{{ form.model.id_for_label }}" class="form-label text-light">Car Model:</label>
                         {{ form.model }}
+                        {% if form.model.errors %}<div class="alert alert-danger mt-2 small">{{ form.model.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.plate.label_tag }}
+                        <label for="{{ form.plate.id_for_label }}" class="form-label text-light">License Plate:</label>
                         {{ form.plate }}
+                        {% if form.plate.errors %}<div class="alert alert-danger mt-2 small">{{ form.plate.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.price.label_tag }}
+                        <label for="{{ form.price.id_for_label }}" class="form-label text-light">Price (per day / total):</label>
                         {{ form.price }}
+                        {% if form.price.errors %}<div class="alert alert-danger mt-2 small">{{ form.price.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.car_type.label_tag }}
+                        <label for="{{ form.car_type.id_for_label }}" class="form-label text-light">Car Type:</label>
                         {{ form.car_type }}
+                        {% if form.car_type.errors %}<div class="alert alert-danger mt-2 small">{{ form.car_type.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.seats.label_tag }}
+                        <label for="{{ form.seats.id_for_label }}" class="form-label text-light">Number of Seats:</label>
                         {{ form.seats }}
+                        {% if form.seats.errors %}<div class="alert alert-danger mt-2 small">{{ form.seats.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.engine_type.label_tag }}
+                        <label for="{{ form.engine_type.id_for_label }}" class="form-label text-light">Engine Type:</label>
                         {{ form.engine_type }}
+                        {% if form.engine_type.errors %}<div class="alert alert-danger mt-2 small">{{ form.engine_type.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.fuel_type.label_tag }}
+                        <label for="{{ form.fuel_type.id_for_label }}" class="form-label text-light">Fuel Type:</label>
                         {{ form.fuel_type }}
+                        {% if form.fuel_type.errors %}<div class="alert alert-danger mt-2 small">{{ form.fuel_type.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.size.label_tag }}
+                        <label for="{{ form.size.id_for_label }}" class="form-label text-light">Car Size:</label>
                         {{ form.size }}
+                        {% if form.size.errors %}<div class="alert alert-danger mt-2 small">{{ form.size.errors }}</div>{% endif %}
                     </div>
+                    
                     <div class="mb-3">
-                        {{ form.image.label_tag }}
+                        <label for="{{ form.image.id_for_label }}" class="form-label text-light">Car Image:</label>
                         {{ form.image }}
+                        {% if form.image.errors %}<div class="alert alert-danger mt-2 small">{{ form.image.errors }}</div>{% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Register Car</button>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">Register Car</button>
+                        <a href="{% url 'owner_dashboard' %}" class="btn btn-secondary w-100">Cancel</a>
+                    </div>
                 </form>
             </div>
         </div>
+    </div>
+</div>
+{% endblock %}
     </div>
 </div>
 {% endblock %}

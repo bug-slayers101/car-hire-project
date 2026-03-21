@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Owner Dashboard{% endblock %}
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Owner Dashboard</h1>
+<div class="container mt-5 mb-5">
+    <h1 class="text-center mb-4 text-light">Owner Dashboard</h1>
 
     <div class="mb-4 text-center">
         <a href="{% url 'register_car' %}" class="btn btn-primary">Register New Car</a>
@@ -10,17 +10,17 @@
 
     <div class="row">
         <div class="col-md-8">
-            <h2>Your Cars</h2>
+            <h2 class="text-light">Your Cars</h2>
             {% if cars %}
                 <div class="row">
                     {% for car in cars %}
                     <div class="col-md-6 mb-3">
-                        <div class="card">
+                        <div class="card" style="background-color: #b2beb5; border-color: #b2beb5;">
                             <div class="card-body">
-                                <h5 class="card-title">{{ car.model }}</h5>
-                                <p class="card-text">Type: {{ car.get_car_type_display }}</p>
-                                <p class="card-text">Price: ksh {{ car.price }}</p>
-                                <p class="card-text">Status: {% if car.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
+                                <h5 class="card-title" style="color: black;">{{ car.model }}</h5>
+                                <p class="card-text" style="color: black;">Type: {{ car.get_car_type_display }}</p>
+                                <p class="card-text" style="color: black;">Price: ksh {{ car.price }}</p>
+                                <p class="card-text" style="color: black;">Status: {% if car.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
                                 {% if not car.available %}
                                     <span class="badge bg-secondary">Sold</span>
                                 {% endif %}
@@ -36,12 +36,12 @@
         </div>
 
         <div class="col-md-4">
-            <h2>Messages</h2>
+            <h2 class="text-light">Messages</h2>
             {% if messages %}
                 <ul class="list-group">
                     {% for message in messages %}
-                    <li class="list-group-item">
-                        <p>{{ message.content }}</p>
+                    <li class="list-group-item text-light" style="background-color: #b2beb5; border-color: #b2beb5;">
+                        <p class="mb-2">{{ message.content }}</p>
                         <small class="text-muted">{{ message.date }}</small>
                     </li>
                     {% endfor %}

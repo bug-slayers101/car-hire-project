@@ -1,29 +1,42 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ car.car_model }}{% endblock %}
+{% block title %}{{ car.model }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-5 mb-5">
   <div class="row">
     <div class="col-md-6">
       {% if car.image %}
-      <img src="{{ car.image.url }}" class="img-fluid rounded" alt="{{ car.car_model }}">
+      <img src="{{ car.image.url }}" class="img-fluid rounded border border-secondary" alt="{{ car.model }}">
+      {% else %}
+      <img src="{% static 'images/img-4.png' %}" class="img-fluid rounded border border-secondary" alt="{{ car.model }}">
       {% endif %}
     </div>
     <div class="col-md-6">
-      <h2>{{ car.model }}</h2>
-      <p><strong>Price:</strong> ksh {{ car.price }}</p>
-      <p><strong>Type:</strong> {{ car.get_car_type_display }}</p>
-      <p><strong>Seats:</strong> {{ car.seats }}</p>
-      <p><strong>Engine:</strong> {{ car.engine_type }}</p>
-      <p><strong>Fuel:</strong> {{ car.fuel_type }}</p>
-      <p><strong>Plate:</strong> {{ car.plate }}</p>
-      {% if car.car_type == 'lease' %}
-      <a href="{% url 'book_car' car.id %}" class="btn btn-primary">Book for Hire</a>
-      {% else %}
-      <a href="{% url 'buy_car' car.id %}" class="btn btn-primary">Request to Buy</a>
-      {% endif %}
+      <h2 class="text-light mb-4">{{ car.model }}</h2>
+      
+      <div class="card mb-3" style="background-color: #b2beb5; border-color: #b2beb5;">
+        <div class="card-body">
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Price:</strong> KSH {{ car.price }}
+            {% if car.car_type == 'lease' %}<small class="text-info">(per day)</small>{% endif %}</p>
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Type:</strong> {{ car.get_car_type_display }}</p>
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Seats:</strong> {{ car.seats }}</p>
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Engine:</strong> {{ car.engine_type }}</p>
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Fuel Type:</strong> {{ car.fuel_type }}</p>
+          <p style="color: black;" class="mb-2"><strong style="color: black;">Size:</strong> {{ car.size }}</p>
+          <p style="color: black;" class="mb-0"><strong style="color: black;">Plate:</strong> <span class="badge bg-info">{{ car.plate }}</span></p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        {% if car.car_type == 'lease' %}
+        <a href="{% url 'book_car' car.id %}" class="btn btn-info w-100">Book for Hire</a>
+        {% else %}
+        <a href="{% url 'buy_car' car.id %}" class="btn btn-success w-100">Make Inquiry</a>
+        {% endif %}
+        <a href="{% if car.car_type == 'lease' %}{% url 'blog_hire' %}{% else %}{% url 'blog_sale' %}{% endif %}" class="btn btn-secondary w-100">Back</a>
+      </div>
     </div>
   </div>
 </div>
