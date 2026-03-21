@@ -1,16 +1,48 @@
 {% extends 'base.html' %}
 {% block title %}Inquire Car{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>Inquire for {{ car.model }}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        {% if booking_form %}
-        <h3>Booking Details</h3>
-        {{ booking_form.as_p }}
-        {% endif %}
-        <button type="submit" class="btn btn-primary">Submit Inquiry</button>
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h1 class="text-center mb-4">Inquire for {{ car.model }}</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.client_name.label_tag }}
+                        {{ form.client_name }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.client_phone.label_tag }}
+                        {{ form.client_phone }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.client_email.label_tag }}
+                        {{ form.client_email }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.client_id_number.label_tag }}
+                        {{ form.client_id_number }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.message.label_tag }}
+                        {{ form.message }}
+                    </div>
+                    {% if booking_form %}
+                    <h3 class="mt-4">Booking Details</h3>
+                    <div class="mb-3">
+                        {{ booking_form.start_date.label_tag }}
+                        {{ booking_form.start_date }}
+                    </div>
+                    <div class="mb-3">
+                        {{ booking_form.end_date.label_tag }}
+                        {{ booking_form.end_date }}
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">Submit Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,31 +1,65 @@
 {% extends 'base.html' %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>Admin Dashboard</h1>
-    <h2>Profiles</h2>
-    <ul>
-        {% for profile in profiles %}
-        <li>{{ profile.user.username }} - {{ profile.role }} - {% if profile.approved %}Approved{% else %}Pending{% endif %}
-            <a href="{% url 'revoke_user' profile.user.id %}">Revoke</a>
-        </li>
-        {% endfor %}
-    </ul>
-    <h2>Cars</h2>
-    <ul>
-        {% for car in cars %}
-        <li>{{ car.model }} - {{ car.owner.username }} - {% if car.approved %}Approved{% else %}Pending{% endif %}</li>
-        {% endfor %}
-    </ul>
-    <h2>Inquiries</h2>
-    <ul>
-        {% for inquiry in inquiries %}
-        <li>{{ inquiry.client_name }} - {{ inquiry.car.model }} - {{ inquiry.inquiry_type }} - {% if inquiry.approved %}Approved{% else %}Pending{% endif %}
-            {% if not inquiry.approved %}
-                <a href="{% url 'approve_inquiry' inquiry.id %}">Approve</a>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Profiles</h2>
+            {% if profiles %}
+                <div class="list-group">
+                    {% for profile in profiles %}
+                    <div class="list-group-item">
+                        <h5>{{ profile.user.username }}</h5>
+                        <p>Role: {{ profile.role }}</p>
+                        <p>Status: {% if profile.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
+                        <a href="{% url 'revoke_user' profile.user.id %}" class="btn btn-danger btn-sm">Revoke</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No profiles.</p>
             {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
+        </div>
+
+        <div class="col-md-4">
+            <h2>Cars</h2>
+            {% if cars %}
+                <div class="list-group">
+                    {% for car in cars %}
+                    <div class="list-group-item">
+                        <h5>{{ car.model }}</h5>
+                        <p>Owner: {{ car.owner.username }}</p>
+                        <p>Status: {% if car.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No cars.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <h2>Inquiries</h2>
+            {% if inquiries %}
+                <div class="list-group">
+                    {% for inquiry in inquiries %}
+                    <div class="list-group-item">
+                        <h5>{{ inquiry.client_name }}</h5>
+                        <p>Car: {{ inquiry.car.model }}</p>
+                        <p>Type: {{ inquiry.inquiry_type }}</p>
+                        <p>Status: {% if inquiry.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
+                        {% if not inquiry.approved %}
+                            <a href="{% url 'approve_inquiry' inquiry.id %}" class="btn btn-success btn-sm">Approve</a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No inquiries.</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

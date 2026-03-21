@@ -28,7 +28,11 @@
                     <p class="card-text">Price: ksh {{ contact.price }}</p>
                 </div>
                 <div class="card-footer bg-white border-0">
-                    <a href="{% url 'makepayment' contact.id %}" class="btn btn-success w-100">Make Payment</a>
+                    {% if contact.car_type == 'lease' %}
+                        <a href="{% url 'book_car' contact.id %}" class="btn btn-info w-100">Hire / Book</a>
+                    {% else %}
+                        <a href="{% url 'buy_car' contact.id %}" class="btn btn-info w-100">Buy / Inquire</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

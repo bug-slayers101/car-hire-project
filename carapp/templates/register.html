@@ -1,13 +1,37 @@
 {% extends 'base.html' %}
 {% block title %}Register{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>Register as {{ role|title }}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ profile_form.as_p }}
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow p-4">
+                <h1 class="text-center mb-4">Register as {{ role|title }}</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ user_form.username.label_tag }}
+                        {{ user_form.username }}
+                    </div>
+                    <div class="mb-3">
+                        {{ user_form.password1.label_tag }}
+                        {{ user_form.password1 }}
+                    </div>
+                    <div class="mb-3">
+                        {{ user_form.password2.label_tag }}
+                        {{ user_form.password2 }}
+                    </div>
+                    <div class="mb-3">
+                        {{ profile_form.phone_number.label_tag }}
+                        {{ profile_form.phone_number }}
+                    </div>
+                    <div class="mb-3">
+                        {{ profile_form.id_number.label_tag }}
+                        {{ profile_form.id_number }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

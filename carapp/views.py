@@ -24,11 +24,21 @@ def contact(request):
 
 def blog_sale(request):
     cars = Car.objects.filter(car_type='sale', approved=True, available=True)
+    query = request.GET.get('q')
+    if query:
+        cars = cars.filter(model__icontains=query)
     return render(request, 'blog_sale.html', {'cars': cars})
 
 def blog_hire(request):
     cars = Car.objects.filter(car_type='lease', approved=True, available=True)
+    query = request.GET.get('q')
+    if query:
+        cars = cars.filter(model__icontains=query)
     return render(request, 'blog_hire.html', {'cars': cars})
+
+def car_detail(request, car_id):
+    car = get_object_or_404(Car, id=car_id, approved=True)
+    return render(request, 'car_detail.html', {'car': car})
 
 # Registration and Login
 def register_profile(request, role):

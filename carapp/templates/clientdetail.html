@@ -26,7 +26,11 @@
                         <p class="card-text">Price per day: ksh {{ car.price }}</p>
                     </div>
                     <div class="card-footer bg-white border-0">
-                        <a href="{% url 'makepayment' car.id %}" class="btn btn-success w-100">Book Now</a>
+                        {% if car.car_type == 'lease' %}
+                            <a href="{% url 'book_car' car.id %}" class="btn btn-success w-100">Book Now</a>
+                        {% else %}
+                            <a href="{% url 'buy_car' car.id %}" class="btn btn-success w-100">Request to Buy</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -1,12 +1,53 @@
 {% extends 'base.html' %}
 {% block title %}Register Car{% endblock %}
 {% block content %}
-<div class="container">
-    <h1>Register Your Car</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Register Car</button>
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h1 class="text-center mb-4">Register Your Car</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.model.label_tag }}
+                        {{ form.model }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.plate.label_tag }}
+                        {{ form.plate }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.price.label_tag }}
+                        {{ form.price }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.car_type.label_tag }}
+                        {{ form.car_type }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.seats.label_tag }}
+                        {{ form.seats }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.engine_type.label_tag }}
+                        {{ form.engine_type }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.fuel_type.label_tag }}
+                        {{ form.fuel_type }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.size.label_tag }}
+                        {{ form.size }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.image.label_tag }}
+                        {{ form.image }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Register Car</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

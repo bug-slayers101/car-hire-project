@@ -12,14 +12,18 @@
       {% endif %}
     </div>
     <div class="col-md-6">
-      <h2>{{ car.car_model }}</h2>
+      <h2>{{ car.model }}</h2>
       <p><strong>Price:</strong> ksh {{ car.price }}</p>
-      <p><strong>Contact:</strong> {{ car.name }} - {{ car.phone_number }}</p>
-      <p><strong>Email:</strong> {{ car.email }}</p>
-      {% if car.message %}
-      <p><strong>Message:</strong> {{ car.message }}</p>
+      <p><strong>Type:</strong> {{ car.get_car_type_display }}</p>
+      <p><strong>Seats:</strong> {{ car.seats }}</p>
+      <p><strong>Engine:</strong> {{ car.engine_type }}</p>
+      <p><strong>Fuel:</strong> {{ car.fuel_type }}</p>
+      <p><strong>Plate:</strong> {{ car.plate }}</p>
+      {% if car.car_type == 'lease' %}
+      <a href="{% url 'book_car' car.id %}" class="btn btn-primary">Book for Hire</a>
+      {% else %}
+      <a href="{% url 'buy_car' car.id %}" class="btn btn-primary">Request to Buy</a>
       {% endif %}
-      <a href="{% url 'makepayment' car.id %}" class="btn btn-success">Make Payment</a>
     </div>
   </div>
 </div>

@@ -3,7 +3,7 @@
  {% block title %}Home{% endblock %}
    {% block content %}
 
-      <!-- banner section start --> 
+      <!-- banner section start -->
       <div class="banner_section layout_padding">
          <div class="container-fluid">
             <div class="row">
@@ -15,9 +15,21 @@
                               <h1 class="banner_taital">New<br> Model Cars</h1>
                               <p class="banner_text">consectetur adipiscing elit, sed do eiusmod tempor incididunt uolore magna aliqua. Ut enim ad minim veniam, quis non</p>
                               <div class="form-group">
-                                 <input type="text" class="update_mail" placeholder="Search here" name="Search here">
-                                 <div class="subscribe_bt"><a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></div>
-                            8000  </div>
+                                 <input type="text" class="update_mail form-control" placeholder="Search here" name="Search here">
+                                 <div class="subscribe_bt"><a href="#" class="btn btn-primary"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></div>
+                            </div>
+                           </div>
+                        </div>
+                        <div class="carousel-item">
+                           <div class="banner_taital_main">
+                              <h1 class="banner_taital">New<br> Model Cars</h1>
+                              <p class="banner_text">consectetur adipiscing elit, sed do eiusmod tempor incididunt uolore magna aliqua. Ut enim ad minim veniam, quis non</p>
+                              <form method="GET" action="{% url 'blog_hire' %}">
+                                 <div class="form-group">
+                                    <input type="text" class="update_mail form-control" placeholder="Search cars..." name="q">
+                                    <button type="submit" class="subscribe_bt btn btn-primary"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                                 </div>
+                              </form>
                            </div>
                         </div>
                         <div class="carousel-item">
@@ -25,18 +37,8 @@
                               <h1 class="banner_taital">New<br> Model Cars</h1>
                               <p class="banner_text">consectetur adipiscing elit, sed do eiusmod tempor incididunt uolore magna aliqua. Ut enim ad minim veniam, quis non</p>
                               <div class="form-group">
-                                 <input type="text" class="update_mail" placeholder="Search here" name="Search here">
-                                 <div class="subscribe_bt"><a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></div>
-                              </div>
-                           </div>
-                        </div>
-                        <div class="carousel-item">
-                           <div class="banner_taital_main">
-                              <h1 class="banner_taital">New<br> Model Cars</h1>
-                              <p class="banner_text">consectetur adipiscing elit, sed do eiusmod tempor incididunt uolore magna aliqua. Ut enim ad minim veniam, quis non</p>
-                              <div class="form-group">
-                                 <input type="text" class="update_mail" placeholder="Search here" name="Search here">
-                                 <div class="subscribe_bt"><a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></div>
+                                 <input type="text" class="update_mail form-control" placeholder="Search here" name="Search here">
+                                 <div class="subscribe_bt"><a href="#" class="btn btn-primary"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></div>
                               </div>
                            </div>
                         </div>
@@ -48,12 +50,12 @@
                      <i class="fa fa-angle-right"></i>
                      </a>
                   </div>
-               </div>8000
+               </div>
                <div class="col-md-6 padding_right0">
-                  <div class="banner_img"><img src="{% static 'images/banner-img.png' %}"></div>
+                  <div class="banner_img"><img src="{% static 'images/banner-img.png' %}" class="img-fluid"></div>
                </div>
             </div>
          </div>
       </div>
-      
+
 {% endblock %}
