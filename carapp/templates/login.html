@@ -1,103 +1,288 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block title%}Login{% endblock %}
-{% block content %}
-<div id="login-carousel" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="{% static 'images/cars/car1.jpg' %}" class="d-block w-100" alt="Car 1">
-    </div>
-    <div class="carousel-item">
-      <img src="{% static 'images/cars/car2.jpg' %}" class="d-block w-100" alt="Car 2">
-    </div>
-    <div class="carousel-item">
-      <img src="{% static 'images/cars/car3.jpg' %}" class="d-block w-100" alt="Car 3">
-    </div>
-    <div class="carousel-item">
-      <img src="{% static 'images/cars/car4.jpg' %}" class="d-block w-100" alt="Car 4">
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#login-carousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#login-carousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/darkly/bootstrap.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                linear-gradient(rgba(7, 12, 19, 0.62), rgba(7, 12, 19, 0.82)),
+                url("{% static 'images/cars/car2.jpg' %}") center center / cover no-repeat fixed;
+            font-family: "Poppins", sans-serif;
+            padding: 24px;
+        }
 
-<div class="login-overlay">
-  <div class="container-md">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow p-4 mt-5">
-          <h1 class="display-1">Login</h1>
-          <p>Enter your credentials below to log in:</p>
-          <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-              <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-              </div>
-            {% endif %}
-            <div class="mb-3">
-              <label for="{{ form.username.id_for_label }}" class="form-label">Username:</label>
-              {{ form.username }}
-              {% if form.username.errors %}
-                <div class="alert alert-danger mt-2">{{ form.username.errors }}</div>
-              {% endif %}
-            </div>
-            <div class="mb-3">
-              <label for="{{ form.password.id_for_label }}" class="form-label">Password:</label>
-              {{ form.password }}
-              {% if form.password.errors %}
-                <div class="alert alert-danger mt-2">{{ form.password.errors }}</div>
-              {% endif %}
-            </div>
-            <button class="btn btn-success w-100" type="submit">Login</button>
-            <p class="mt-3">Don't have an account? <a href="{% url 'register_profile' 'client' %}">Register as Client</a> or <a href="{% url 'register_profile' 'owner' %}">Register as Owner</a></p>
-          </form>
+        .login-shell {
+            width: 100%;
+            max-width: 480px;
+            margin: 110px auto 0;
+        }
+
+        .header_section {
+            background-image: none;
+            position: relative;
+            z-index: 5;
+        }
+
+        .header_section .container {
+            max-width: 1140px;
+        }
+
+        .custom_nav-container {
+            background: linear-gradient(45deg, #fc9d22, #007bff) !important;
+            border-radius: 25px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 0;
+        }
+
+        .custom_nav-container .nav-link {
+            color: white !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .custom_nav-container .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .custom_nav-container .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.45);
+            margin-left: auto;
+            margin-right: 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .custom_nav-container .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.95%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        #loginNavbar .navbar-nav {
+            width: 100%;
+            display: flex;
+        }
+
+        #loginNavbar .nav-item {
+            flex: 1;
+        }
+
+        #loginNavbar .nav-link {
+            text-align: center;
+            text-transform: uppercase;
+            padding: 1rem 0.75rem;
+        }
+
+        .login-main {
+            display: flex;
+            justify-content: center;
+            padding: 0 12px 32px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 0;
+            border-radius: 24px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+
+        .login-card-body {
+            padding: 32px 30px;
+        }
+
+        .login-tag {
+            color: #fc9d22;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            color: #101418;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-text {
+            color: #5d6772;
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            color: #1a1f24;
+            font-weight: 600;
+        }
+
+        .form-control {
+            min-height: 50px;
+            border-radius: 14px;
+            border: 1px solid #d4dbe3;
+            color: #111;
+            background: #fff;
+            padding: 0.85rem 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #fc9d22;
+            box-shadow: 0 0 0 0.2rem rgba(252, 157, 34, 0.22);
+        }
+
+        .login-btn {
+            min-height: 50px;
+            border-radius: 14px;
+            font-weight: 700;
+        }
+
+        .login-links {
+            color: #5d6772;
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+
+        .login-links a,
+        .back-home {
+            color: #fc9d22;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 18px;
+        }
+
+        .field-error {
+            color: #c0392b;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 575.98px) {
+            .login-card-body {
+                padding: 26px 20px;
+            }
+
+            .login-title {
+                font-size: 1.9rem;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            #loginNavbar .navbar-nav {
+                display: block;
+            }
+
+            #loginNavbar .nav-item {
+                flex: none;
+            }
+
+            #loginNavbar .nav-link {
+                text-align: left;
+                padding: 0.85rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header_section">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg custom_nav-container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#loginNavbar" aria-controls="loginNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="loginNavbar">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about' %}">About</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="loginBlogDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Blog
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="loginBlogDropdown">
+                                <a class="dropdown-item" href="{% url 'blog_sale' %}">Cars for Sale</a>
+                                <a class="dropdown-item" href="{% url 'blog_hire' %}">Cars for Hire</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contacts' %}">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+    </header>
 
-<style>
-#login-carousel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+    <main class="login-main">
+        <div class="login-shell">
+            <div class="login-card">
+                <div class="login-card-body">
+                    <div class="login-tag">Account Access</div>
+                    <h1 class="login-title">Login</h1>
+                    <p class="login-text">Use your username and password to continue to your dashboard.</p>
 
-#login-carousel img {
-  width: 100%;
-  height: 100vh;
-  object-fit: cover;
-}
+                    <form method="post" novalidate>
+                        {% csrf_token %}
 
-.login-overlay {
-  position: relative;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.5);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
 
-.login-overlay .card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-}
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="field-error">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
 
-.carousel-control-prev,
-.carousel-control-next {
-  z-index: 2;
-}
-</style>
-{% endblock %}
+                        <div class="form-group">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                            <div class="field-error">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-block login-btn">Login</button>
+                    </form>
+
+                    <p class="login-links">
+                        Need an account?
+                        <a href="{% url 'register_profile' 'client' %}">Register as client</a>
+                        or
+                        <a href="{% url 'register_profile' 'owner' %}">register as owner</a>.
+                    </p>
+
+                    <a href="{% url 'home' %}" class="back-home">Back to home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

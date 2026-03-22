@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from decimal import Decimal
 from .models import Profile, Car, ClientInquiry, Message
 
 @receiver(post_save, sender=Profile)
@@ -21,7 +22,7 @@ def handle_inquiry_approval(sender, instance, created, **kwargs):
         if instance.inquiry_type == 'buy':
             instance.car.available = False
             instance.car.save()
-            owner_commission = instance.car.price * 0.9
+            owner_commission = instance.car.price * Decimal('0.9')
             Message.objects.create(user=instance.client, content=f"Your purchase of {instance.car.model} has been approved. Proceed to payment.")
             Message.objects.create(user=instance.car.owner, content=f"Your car {instance.car.model} has been sold to {instance.client_name} for {instance.car.price}. You will receive {owner_commission}.")
         elif instance.inquiry_type == 'hire':

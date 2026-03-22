@@ -21,8 +21,8 @@
       <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
       <!-- Responsive-->
       <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
-      <!-- fevicon -->
-      <link rel="icon" href="{% static 'images/fevicon.png' %}" type="image/gif" />
+      <!-- favicon -->
+      <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png" />
       <!-- font css -->
       <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap" rel="stylesheet">
       <!-- Scrollbar Custom CSS -->
@@ -229,6 +229,53 @@
             border-radius: 5px;
          }
 
+         .custom_nav-container .dropdown-menu {
+            border: 0;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+         }
+
+         .custom_nav-container .dropdown-item {
+            font-weight: 600;
+         }
+
+         .custom_nav-container .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.45);
+            margin-left: auto;
+         }
+
+         .custom_nav-container .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.95%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+         }
+
+         @media (max-width: 991.98px) {
+            #navbarSupportedContent .navbar-nav {
+               display: block;
+            }
+
+            #navbarSupportedContent .nav-item {
+               width: 100%;
+            }
+
+            #navbarSupportedContent .nav-link {
+               text-align: left;
+               padding: 0.85rem 1rem;
+            }
+
+            .custom_nav-container .dropdown-menu {
+               position: static;
+               float: none;
+               width: 100%;
+               background: rgba(0, 0, 0, 0.18);
+               border: 0;
+               margin-top: 0;
+            }
+
+            .custom_nav-container .dropdown-item {
+               color: #fff;
+            }
+         }
+
          /* Randomize background on page load */
          .carousel-item.active {
             display: block !important;
@@ -237,7 +284,7 @@
    </head>
    <body>
       <!-- Background SUV Carousel -->
-      <div id="background-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+      <div id="background-carousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000">
          <div class="carousel-inner">
             <div class="carousel-item active">
                <img src="{% static 'images/suvs/suv1.jpg' %}" class="d-block w-100" alt="SUV Background 1">
@@ -263,7 +310,7 @@
             <nav class="navbar navbar-expand-lg custom_nav-container ">
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class=""> </span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -287,15 +334,12 @@
                             <a class="nav-link" href="{% url 'contacts' %}">Contact</a>
                         </li>
                         {% if request.user.is_authenticated %}
-                            {% if request.user.is_staff %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
-                                </li>
-                            {% elif request.user.profile.role == 'owner' %}
+                            {% if request.user.is_superuser %}
+                            {% elif request.user.profile and request.user.profile.role == 'owner' %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'owner_dashboard' %}">Owner Dashboard</a>
                                 </li>
-                            {% elif request.user.profile.role == 'client' %}
+                            {% elif request.user.profile and request.user.profile.role == 'client' %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'client_dashboard' %}">Client Dashboard</a>
                                 </li>
@@ -332,7 +376,9 @@
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             {% endfor %}
         </div>
@@ -346,13 +392,47 @@
       <script src="{% static 'js/jquery.min.js' %}"></script>
       <script src="{% static 'js/popper.min.js' %}"></script>
       <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-      <script src="{% static 'js/jquery-3.0.0.min.js' %}"></script>
       <script src="{% static 'js/plugin.js' %}"></script>
       <!-- sidebar -->
       <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
       <script src="{% static 'js/custom.js' %}"></script>
 
       <script>
+         // Keep the shared navbar responsive even if other plugins fail.
+         document.addEventListener('DOMContentLoaded', function() {
+            const toggler = document.querySelector('.custom_nav-container .navbar-toggler');
+            const menu = document.getElementById('navbarSupportedContent');
+
+            if (toggler && menu) {
+               toggler.addEventListener('click', function() {
+                  menu.classList.toggle('show');
+               });
+            }
+
+            document.querySelectorAll('.custom_nav-container .dropdown-toggle').forEach(function(toggle) {
+               toggle.addEventListener('click', function(event) {
+                  event.preventDefault();
+                  const dropdownMenu = this.nextElementSibling;
+                  if (dropdownMenu) {
+                     document.querySelectorAll('.custom_nav-container .dropdown-menu.show').forEach(function(openMenu) {
+                        if (openMenu !== dropdownMenu) {
+                           openMenu.classList.remove('show');
+                        }
+                     });
+                     dropdownMenu.classList.toggle('show');
+                  }
+               });
+            });
+
+            document.addEventListener('click', function(event) {
+               if (!event.target.closest('.custom_nav-container .dropdown')) {
+                  document.querySelectorAll('.custom_nav-container .dropdown-menu.show').forEach(function(openMenu) {
+                     openMenu.classList.remove('show');
+                  });
+               }
+            });
+         });
+
          // Randomize background SUV image on page load
          document.addEventListener('DOMContentLoaded', function() {
             const carouselItems = document.querySelectorAll('#background-carousel .carousel-item');

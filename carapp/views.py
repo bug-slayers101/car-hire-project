@@ -69,6 +69,16 @@ def register_profile(request, role):
     return render(request, 'register.html', {'user_form': user_form, 'profile_form': profile_form, 'role': role})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
+        profile = Profile.objects.filter(user=request.user).first()
+        if profile and profile.role == 'owner':
+            return redirect('owner_dashboard')
+        if profile and profile.role == 'client':
+            return redirect('client_dashboard')
+        return redirect('home')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -76,19 +86,20 @@ def login_view(request):
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None and user.is_active:
-                try:
-                    profile = Profile.objects.get(user=user)
-                    login(request, user)
-                    if user.is_staff:
-                        return redirect('admin_dashboard')
-                    elif profile.role == 'owner':
-                        return redirect('owner_dashboard')
-                    else:
-                        return redirect('client_dashboard')
-                except Profile.DoesNotExist:
-                    messages.error(request, 'Profile not found.')
+                login(request, user)
+                if user.is_superuser:
+                    return redirect('admin_dashboard')
+
+                profile = Profile.objects.filter(user=user).first()
+                if profile is None:
+                    logout(request)
+                    form.add_error(None, 'Your account is missing a profile. Please contact the administrator.')
+                elif profile.role == 'owner':
+                    return redirect('owner_dashboard')
+                else:
+                    return redirect('client_dashboard')
             else:
-                messages.error(request, 'Invalid credentials or account not active.')
+                form.add_error(None, 'Invalid username or password, or your account is not active yet.')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
@@ -140,6 +151,7 @@ def inquire_car(request, car_id, inquiry_type):
                     inquiry.save()
                     booking.save()
             else:
+                inquiry.total_price = car.price
                 inquiry.save()
             messages.success(request, 'Inquiry submitted. Await approval.')
             return redirect('client_dashboard')
@@ -151,6 +163,15 @@ def inquire_car(request, car_id, inquiry_type):
 @login_required
 def make_payment(request, inquiry_id):
     inquiry = get_object_or_404(ClientInquiry, id=inquiry_id, client=request.user, approved=True)
+    payable_amount = inquiry.total_price if inquiry.total_price is not None else inquiry.car.price
+
+    if payable_amount is None:
+        messages.error(request, 'This inquiry does not have a payable amount yet.')
+        return redirect('client_dashboard')
+
+    if inquiry.total_price is None:
+        inquiry.total_price = payable_amount
+        inquiry.save(update_fields=['total_price'])
 
     if request.method == 'POST':
         phone_number = request.POST.get('phone_number')
@@ -165,7 +186,7 @@ def make_payment(request, inquiry_id):
             phone_number = phone_number[1:]
 
         # Initiate M-Pesa STK push
-        amount = int(inquiry.total_price)
+        amount = int(payable_amount)
         account_reference = f"CarHire-{inquiry.id}"
         transaction_desc = f"Payment for {inquiry.car.model}"
 
@@ -188,7 +209,7 @@ def make_payment(request, inquiry_id):
         messages.success(request, 'Payment request sent to your phone. Please complete the payment.')
         return redirect('client_dashboard')
 
-    return render(request, 'pay.html', {'inquiry': inquiry})
+    return render(request, 'pay.html', {'inquiry': inquiry, 'payable_amount': payable_amount})
 
 # Owner views
 @login_required
@@ -225,42 +246,109 @@ def cancel_car(request, car_id):
 # Admin views
 @login_required
 def admin_dashboard(request):
-    if not request.user.is_staff:
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can access the admin dashboard.')
         return redirect('home')
-    
-    # Separate profiles by role
-    client_profiles = Profile.objects.filter(role='client')
-    owner_profiles = Profile.objects.filter(role='owner')
-    
-    # Get cars and inquiries
-    cars = Car.objects.all()
-    inquiries = ClientInquiry.objects.all()
-    
+
+    client_profiles = Profile.objects.filter(role='client').select_related('user').order_by('approved', '-created_at')
+    owner_profiles = Profile.objects.filter(role='owner').select_related('user').order_by('approved', '-created_at')
+    cars = Car.objects.select_related('owner').order_by('approved', '-created_at')
+    inquiries = ClientInquiry.objects.select_related('client', 'car', 'car__owner').order_by('approved', '-created_at')
+    bookings = Booking.objects.select_related('inquiry', 'inquiry__car', 'inquiry__client').order_by('-start_date', '-end_date')
+    mpesa_transactions = MpesaTransaction.objects.select_related('inquiry', 'inquiry__car', 'inquiry__client').order_by('-created_at')
+    messages_list = Message.objects.select_related('user').order_by('-date')
+
     context = {
         'client_profiles': client_profiles,
         'owner_profiles': owner_profiles,
         'cars': cars,
         'inquiries': inquiries,
+        'bookings': bookings,
+        'mpesa_transactions': mpesa_transactions,
+        'messages_list': messages_list,
     }
     return render(request, 'admin_dashboard.html', context)
 
 @login_required
-def approve_inquiry(request, inquiry_id):
-    if not request.user.is_staff:
+def approve_profile(request, profile_id):
+    if request.method != 'POST':
+        return redirect('admin_dashboard')
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can approve profiles.')
         return redirect('home')
-    inquiry = get_object_or_404(ClientInquiry, id=inquiry_id)
+
+    profile = get_object_or_404(Profile.objects.select_related('user'), id=profile_id)
+    if profile.approved:
+        messages.info(request, f'{profile.user.username} is already approved.')
+        return redirect('admin_dashboard')
+
+    profile.approved = True
+    profile.save()
+    messages.success(request, f'{profile.user.username} has been approved.')
+    return redirect('admin_dashboard')
+
+
+@login_required
+def approve_car(request, car_id):
+    if request.method != 'POST':
+        return redirect('admin_dashboard')
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can approve cars.')
+        return redirect('home')
+
+    car = get_object_or_404(Car.objects.select_related('owner'), id=car_id)
+    owner_profile = Profile.objects.filter(user=car.owner, role='owner').first()
+    if owner_profile and not owner_profile.approved:
+        messages.error(request, f'Approve {car.owner.username} first before approving {car.model}.')
+        return redirect('admin_dashboard')
+
+    if car.approved:
+        messages.info(request, f'{car.model} is already approved.')
+        return redirect('admin_dashboard')
+
+    car.approved = True
+    car.save()
+    messages.success(request, f'{car.model} ({car.plate}) has been approved.')
+    return redirect('admin_dashboard')
+
+
+@login_required
+def approve_inquiry(request, inquiry_id):
+    if request.method != 'POST':
+        return redirect('admin_dashboard')
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can approve inquiries.')
+        return redirect('home')
+
+    inquiry = get_object_or_404(ClientInquiry.objects.select_related('car', 'client'), id=inquiry_id)
+    if not inquiry.car.approved:
+        messages.error(request, f'Approve {inquiry.car.model} before approving this inquiry.')
+        return redirect('admin_dashboard')
+    if inquiry.inquiry_type == 'buy' and not inquiry.car.available:
+        messages.error(request, f'{inquiry.car.model} is no longer available for purchase.')
+        return redirect('admin_dashboard')
+    if inquiry.approved:
+        messages.info(request, f'Inquiry from {inquiry.client_name} is already approved.')
+        return redirect('admin_dashboard')
+
     inquiry.approved = True
     inquiry.save()
+    messages.success(request, f'Inquiry from {inquiry.client_name} has been approved.')
     return redirect('admin_dashboard')
 
 @login_required
 def revoke_user(request, user_id):
-    if not request.user.is_staff:
+    if request.method != 'POST':
+        return redirect('admin_dashboard')
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can revoke users.')
         return redirect('home')
     user = get_object_or_404(User, id=user_id)
     user.is_active = False
     user.save()
+    Profile.objects.filter(user=user).update(approved=False)
     Message.objects.create(user=user, content='Your account has been revoked by admin.')
+    messages.success(request, f'{user.username} has been revoked.')
     return redirect('admin_dashboard')
 
 def logout_view(request):
