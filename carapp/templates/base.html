@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html>
@@ -207,6 +208,25 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 1rem;
+         }
+
+         /* Navbar rainbow theme */
+         .custom_nav-container {
+            background: linear-gradient(45deg, #fc9d22, #007bff) !important;
+            border-radius: 25px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+         }
+
+         .custom_nav-container .nav-link {
+            color: white !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+         }
+
+         .custom_nav-container .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
          }
 
          /* Randomize background on page load */

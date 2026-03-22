@@ -4,7 +4,6 @@ from .models import Profile, Car, ClientInquiry, Message, Booking, MpesaTransact
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('get_user_info', 'role', 'phone_number', 'id_number', 'approved')
-    list_editable = ('approved',)
     search_fields = ('user__username', 'id_number')
 
     def get_queryset(self, request):
@@ -13,9 +12,8 @@ class ProfileAdmin(admin.ModelAdmin):
     def get_user_info(self, obj):
         try:
             return obj.user.username
-        except AttributeError:
+        except:
             return f"User {obj.user_id}"
-    get_user_info.short_description = 'User'
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):

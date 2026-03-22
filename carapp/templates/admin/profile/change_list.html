@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    <ul class="object-tools">
+        <li>
+            <a href="{% url 'admin:carapp_profile_add' %}" class="addlink">
+                Add Profile
+            </a>
+        </li>
+        <!-- Add more custom tools here if needed -->
+    </ul>
+{% endblock %}
