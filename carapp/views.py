@@ -115,6 +115,7 @@ def client_dashboard(request):
 @login_required
 def inquire_car(request, car_id, inquiry_type):
     car = get_object_or_404(Car, id=car_id)
+    booking_form = BookingForm(request.POST or None) if inquiry_type == 'hire' else None
     if request.method == 'POST':
         form = ClientInquiryForm(request.POST)
         if form.is_valid():
@@ -123,12 +124,9 @@ def inquire_car(request, car_id, inquiry_type):
             inquiry.car = car
             inquiry.inquiry_type = inquiry_type
             if inquiry_type == 'hire':
-                # Handle booking form
-                booking_form = BookingForm(request.POST)
                 if booking_form.is_valid():
                     start_date = booking_form.cleaned_data['start_date']
                     end_date = booking_form.cleaned_data['end_date']
-                    # Check availability
                     overlapping = Booking.objects.filter(
                         inquiry__car=car,
                         inquiry__approved=True,
@@ -136,8 +134,15 @@ def inquire_car(request, car_id, inquiry_type):
                         end_date__gt=start_date
                     ).exists()
                     if overlapping:
-                        messages.error(request, 'Car is not available for the selected dates.')
-                        return redirect('blog_hire')
+                        booking_form.add_error(
+                            None,
+                            'This car has already been booked for the selected dates. Please choose different dates.'
+                        )
+                        return render(
+                            request,
+                            'inquire.html',
+                            {'form': form, 'booking_form': booking_form, 'car': car, 'inquiry_type': inquiry_type}
+                        )
                     booking = booking_form.save(commit=False)
                     booking.inquiry = inquiry
                     days = (booking.end_date - booking.start_date).days
@@ -157,7 +162,6 @@ def inquire_car(request, car_id, inquiry_type):
             return redirect('client_dashboard')
     else:
         form = ClientInquiryForm()
-        booking_form = BookingForm() if inquiry_type == 'hire' else None
     return render(request, 'inquire.html', {'form': form, 'booking_form': booking_form, 'car': car, 'inquiry_type': inquiry_type})
 
 @login_required
