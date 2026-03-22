@@ -17,20 +17,20 @@
         {% if cars %}
         {% for car in cars %}
         <div class="col-md-4 mb-4">
-            <div class="card h-100" style="background-color: #b2beb5; border-color: #b2beb5;">
+            <div class="card h-100 car-card" style="background-color: rgba(178, 190, 181, 0.9); border-color: #b2beb5; backdrop-filter: blur(10px);">
                 {% if car.image %}
                 <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.model }}">
                 {% else %}
                 <img src="{% static 'images/img-4.png' %}" class="card-img-top" alt="{{ car.model }}">
                 {% endif %}
-                <div class="card-body">
+                <div class="card-body car-info-slide">
                     <h5 class="card-title" style="color: black;">{{ car.model }}</h5>
                     <p class="card-text" style="color: black;"><strong>Price per day:</strong> KSH {{ car.price }}</p>
                     <p class="card-text" style="color: black;"><strong>Seats:</strong> {{ car.seats }}</p>
                     <p class="card-text" style="color: black;"><strong>Engine:</strong> {{ car.engine_type }}</p>
                     <p class="card-text" style="color: black;"><strong>Fuel:</strong> {{ car.fuel_type }}</p>
                 </div>
-                <div class="card-footer" style="background-color: #b2beb5; border-color: #b2beb5;">
+                <div class="card-footer" style="background-color: rgba(178, 190, 181, 0.9); border-color: #b2beb5; backdrop-filter: blur(10px);">
                     {% if user.is_authenticated and user.profile.role == 'client' %}
                         <a href="{% url 'book_car' car.id %}" class="btn btn-info w-100">Make Inquiry</a>
                     {% else %}

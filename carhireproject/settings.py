@@ -84,8 +84,27 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+# M-Pesa Configuration
+MPESA_CONFIG = {
+    'CONSUMER_KEY': 'JywVSm6xDzYdxEFdQayP9X43r26J16MnctA2YvtcoBPy2CJh',
+    'CONSUMER_SECRET': 'Yfh7N2zZEq1rwq88BZpjg6g6YqK33ORZ6S4iR5d4MCkcAP5wy7WmWHAAVBuAMWcR',
+    'BUSINESS_SHORTCODE': '174379',
+    'PASSKEY': 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
+    'ACCOUNT_REFERENCE': 'CarHireProject',
+    'TRANSACTION_DESC': 'Car Hire Payment',
+    'CALLBACK_URL': 'https://your-domain.com/mpesa/callback/',  # Update with your actual domain or ngrok URL
+    'INITIATOR_NAME': 'testapi',
+    'INITIATOR_PASSWORD': 'Safaricom123!!',
+    'PARTY_A': '600426',
+    'PARTY_B': '600000',
+    'PHONE_NUMBER': '254708374149',
+}
+
+# M-Pesa API URLs
+MPESA_BASE_URL = 'https://sandbox.safaricom.co.ke'  # Use production URL for live
+MPESA_ACCESS_TOKEN_URL = f'{MPESA_BASE_URL}/oauth/v1/generate?grant_type=client_credentials'
+MPESA_STK_PUSH_URL = f'{MPESA_BASE_URL}/mpesa/stkpush/v1/processrequest'
+MPESA_STK_QUERY_URL = f'{MPESA_BASE_URL}/mpesa/stkpushquery/v1/query'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

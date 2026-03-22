@@ -1,11 +1,21 @@
 from django.contrib import admin
-from .models import Profile, Car, ClientInquiry, Message, Booking
+from .models import Profile, Car, ClientInquiry, Message, Booking, MpesaTransaction
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'phone_number', 'id_number', 'approved')
+    list_display = ('get_user_info', 'role', 'phone_number', 'id_number', 'approved')
     list_editable = ('approved',)
     search_fields = ('user__username', 'id_number')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
+    def get_user_info(self, obj):
+        try:
+            return obj.user.username
+        except AttributeError:
+            return f"User {obj.user_id}"
+    get_user_info.short_description = 'User'
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
@@ -29,4 +39,10 @@ class MessageAdmin(admin.ModelAdmin):
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('inquiry', 'start_date', 'end_date', 'total_price')
     search_fields = ('inquiry__client_name', 'inquiry__car__model')
+
+@admin.register(MpesaTransaction)
+class MpesaTransactionAdmin(admin.ModelAdmin):
+    list_display = ('inquiry', 'amount', 'phone_number', 'status', 'transaction_id', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('inquiry__client_name', 'transaction_id', 'phone_number')
 

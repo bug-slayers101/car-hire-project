@@ -8,7 +8,7 @@
         <div class="col-md-6">
             <div class="card shadow p-4 bg-dark border-secondary">
                 <h1 class="display-5 text-light mb-3">Complete Payment</h1>
-                <p class="text-muted mb-4">Finalize your purchase for <strong class="text-info">{{ inquiry.car.model }}</strong></p>
+                <p class="text-muted mb-4">Complete your payment for <strong class="text-info">{{ inquiry.car.model }}</strong> using M-Pesa</p>
 
                 <form method="POST">
                     {% csrf_token %}
@@ -23,34 +23,25 @@
                         <input type="text" class="form-control" value="KSH {{ inquiry.total_price }}" readonly>
                     </div>
 
-                    <hr class="border-secondary">
-                    
-                    <h5 class="text-light mb-3">Card Details</h5>
-
                     <div class="mb-3">
-                        <label class="form-label text-light">Cardholder Name</label>
-                        <input type="text" name="cardholder" class="form-control" placeholder="Full Name" required>
+                        <label class="form-label text-light">M-Pesa Phone Number</label>
+                        <input type="tel" name="phone_number" class="form-control" placeholder="254XXXXXXXXX" required>
+                        <div class="form-text text-muted">Enter your M-Pesa registered phone number</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Card Number</label>
-                        <input type="text" name="card_number" class="form-control" maxlength="19" placeholder="1234 5678 9012 3456" required>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label text-light">Expiry Date</label>
-                            <input type="text" name="expiry" class="form-control" placeholder="MM/YY" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label text-light">CVV</label>
-                            <input type="text" name="cvv" class="form-control" maxlength="4" placeholder="123" required>
-                        </div>
+                    <div class="alert alert-info">
+                        <strong>M-Pesa Payment Instructions:</strong>
+                        <ol class="mb-0 mt-2">
+                            <li>Enter your M-Pesa phone number above</li>
+                            <li>Click "Pay with M-Pesa"</li>
+                            <li>You will receive a STK push on your phone</li>
+                            <li>Enter your M-Pesa PIN to complete payment</li>
+                        </ol>
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button class="btn btn-success w-100" type="submit" name="action" value="accept">Pay KSH {{ inquiry.total_price }}</button>
-                        <button class="btn btn-danger w-100" type="submit" name="action" value="reject">Reject</button>
+                        <button class="btn btn-success w-100" type="submit">Pay with M-Pesa</button>
+                        <a href="{% url 'client_dashboard' %}" class="btn btn-secondary w-100">Cancel</a>
                     </div>
                 </form>
             </div>

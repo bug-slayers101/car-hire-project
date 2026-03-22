@@ -16,8 +16,8 @@
     <div class="col-md-6">
       <h2 class="text-light mb-4">{{ car.model }}</h2>
       
-      <div class="card mb-3" style="background-color: #b2beb5; border-color: #b2beb5;">
-        <div class="card-body">
+      <div class="card mb-3 car-card" style="background-color: rgba(178, 190, 181, 0.9); border-color: #b2beb5; backdrop-filter: blur(10px);">
+        <div class="card-body car-info-slide">
           <p style="color: black;" class="mb-2"><strong style="color: black;">Price:</strong> KSH {{ car.price }}
             {% if car.car_type == 'lease' %}<small class="text-info">(per day)</small>{% endif %}</p>
           <p style="color: black;" class="mb-2"><strong style="color: black;">Type:</strong> {{ car.get_car_type_display }}</p>

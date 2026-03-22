@@ -12,7 +12,10 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.role}"
+        try:
+            return f"{self.user.username} - {self.role}"
+        except:
+            return f"Profile {self.id} - {self.role}"
 
 class Car(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cars')
@@ -77,5 +80,27 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking for {self.inquiry.car.model} by {self.inquiry.client_name}"
+
+class MpesaTransaction(models.Model):
+    inquiry = models.OneToOneField(ClientInquiry, on_delete=models.CASCADE)
+    merchant_request_id = models.CharField(max_length=100, blank=True, null=True)
+    checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
+    result_code = models.IntegerField(default=0)
+    result_desc = models.TextField(blank=True, null=True)
+    callback_metadata = models.JSONField(blank=True, null=True)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    phone_number = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled')
+    ], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"M-Pesa Transaction for {self.inquiry.car.model} - {self.status}"
 
    

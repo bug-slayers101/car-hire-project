@@ -2,11 +2,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Profile, Car, ClientInquiry, Message, Booking
+from .models import Profile, Car, ClientInquiry, Message, Booking, MpesaTransaction
 from .forms import ProfileForm, CarForm, ClientInquiryForm, BookingForm, LoginForm, UserRegistrationForm
+from .mpesa_utils import MpesaAPI
 from django.contrib import messages
 from django.utils import timezone
 from datetime import date
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Public views
 def index(request):
@@ -147,16 +151,43 @@ def inquire_car(request, car_id, inquiry_type):
 @login_required
 def make_payment(request, inquiry_id):
     inquiry = get_object_or_404(ClientInquiry, id=inquiry_id, client=request.user, approved=True)
+
     if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'accept':
-            # Process payment
-            messages.success(request, f'Payment for {inquiry.car.model} processed.')
-            return redirect('client_dashboard')
-        else:
-            inquiry.delete()
-            messages.info(request, 'Inquiry cancelled.')
-            return redirect('client_dashboard')
+        phone_number = request.POST.get('phone_number')
+        if not phone_number:
+            messages.error(request, 'Please provide a phone number.')
+            return redirect('make_payment', inquiry_id=inquiry_id)
+
+        # Format phone number to international format
+        if phone_number.startswith('0'):
+            phone_number = '254' + phone_number[1:]
+        elif phone_number.startswith('+'):
+            phone_number = phone_number[1:]
+
+        # Initiate M-Pesa STK push
+        amount = int(inquiry.total_price)
+        account_reference = f"CarHire-{inquiry.id}"
+        transaction_desc = f"Payment for {inquiry.car.model}"
+
+        stk_response = MpesaAPI.stk_push(phone_number, amount, account_reference, transaction_desc)
+
+        if 'error' in stk_response:
+            messages.error(request, f'Payment initiation failed: {stk_response["error"]}')
+            return redirect('make_payment', inquiry_id=inquiry_id)
+
+        # Create M-Pesa transaction record
+        transaction = MpesaTransaction.objects.create(
+            inquiry=inquiry,
+            merchant_request_id=stk_response.get('MerchantRequestID'),
+            checkout_request_id=stk_response.get('CheckoutRequestID'),
+            amount=amount,
+            phone_number=phone_number,
+            status='pending'
+        )
+
+        messages.success(request, 'Payment request sent to your phone. Please complete the payment.')
+        return redirect('client_dashboard')
+
     return render(request, 'pay.html', {'inquiry': inquiry})
 
 # Owner views
@@ -235,4 +266,75 @@ def revoke_user(request, user_id):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+@csrf_exempt
+def mpesa_callback(request):
+    """Handle M-Pesa payment callback"""
+    if request.method == 'POST':
+        try:
+            callback_data = json.loads(request.body.decode('utf-8'))
+
+            # Extract callback data
+            merchant_request_id = callback_data['Body']['stkCallback']['MerchantRequestID']
+            checkout_request_id = callback_data['Body']['stkCallback']['CheckoutRequestID']
+            result_code = callback_data['Body']['stkCallback']['ResultCode']
+            result_desc = callback_data['Body']['stkCallback']['ResultDesc']
+
+            # Find the transaction
+            try:
+                transaction = MpesaTransaction.objects.get(
+                    merchant_request_id=merchant_request_id,
+                    checkout_request_id=checkout_request_id
+                )
+            except MpesaTransaction.DoesNotExist:
+                return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Transaction not found'})
+
+            # Update transaction status
+            transaction.result_code = result_code
+            transaction.result_desc = result_desc
+
+            if result_code == 0:
+                # Payment successful
+                transaction.status = 'completed'
+                callback_metadata = callback_data['Body']['stkCallback']['CallbackMetadata']['Item']
+
+                # Extract transaction details
+                for item in callback_metadata:
+                    if item['Name'] == 'MpesaReceiptNumber':
+                        transaction.transaction_id = item['Value']
+                    elif item['Name'] == 'TransactionDate':
+                        pass  # Could store transaction date if needed
+                    elif item['Name'] == 'PhoneNumber':
+                        pass  # Phone number already stored
+
+                transaction.callback_metadata = callback_metadata
+
+                # Mark inquiry as paid and create success message
+                inquiry = transaction.inquiry
+                # You might want to add a payment status to the inquiry model
+                Message.objects.create(
+                    user=inquiry.client,
+                    content=f'Payment of KSH {transaction.amount} for {inquiry.car.model} was successful. Transaction ID: {transaction.transaction_id}'
+                )
+
+            else:
+                # Payment failed
+                transaction.status = 'failed'
+                Message.objects.create(
+                    user=transaction.inquiry.client,
+                    content=f'Payment for {transaction.inquiry.car.model} failed: {result_desc}'
+                )
+
+            transaction.save()
+
+            return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Callback received successfully'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Invalid JSON data'})
+        except KeyError as e:
+            return JsonResponse({'ResultCode': 1, 'ResultDesc': f'Missing key: {str(e)}'})
+        except Exception as e:
+            return JsonResponse({'ResultCode': 1, 'ResultDesc': f'Error: {str(e)}'})
+
+    return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Invalid request method'})
 

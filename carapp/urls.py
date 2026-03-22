@@ -24,5 +24,6 @@ urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('approve_inquiry/<int:inquiry_id>/', views.approve_inquiry, name='approve_inquiry'),
     path('revoke_user/<int:user_id>/', views.revoke_user, name='revoke_user'),
+    path('mpesa/callback/', views.mpesa_callback, name='mpesa_callback'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

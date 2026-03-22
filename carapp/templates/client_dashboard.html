@@ -11,8 +11,8 @@
                 <div class="row">
                     {% for inquiry in inquiries %}
                     <div class="col-md-6 mb-3">
-                        <div class="card" style="background-color: #b2beb5; border-color: #b2beb5;">
-                            <div class="card-body">
+                        <div class="card car-card" style="background-color: rgba(178, 190, 181, 0.9); border-color: #b2beb5; backdrop-filter: blur(10px);">
+                            <div class="card-body car-info-slide">
                                 <h5 class="card-title" style="color: black;">{{ inquiry.car.model }}</h5>
                                 <p class="card-text" style="color: black;">Type: {{ inquiry.inquiry_type|title }}</p>
                                 <p class="card-text" style="color: black;">Status: {% if inquiry.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</p>
@@ -34,7 +34,7 @@
             {% if messages %}
                 <ul class="list-group">
                     {% for message in messages %}
-                    <li class="list-group-item text-light" style="background-color: #b2beb5; border-color: #b2beb5;">
+                    <li class="list-group-item text-light car-card" style="background-color: rgba(178, 190, 181, 0.9); border-color: #b2beb5; backdrop-filter: blur(10px);">
                         <p class="mb-2">{{ message.content }}</p>
                         <small class="text-muted">{{ message.date }}</small>
                     </li>
